@@ -18,8 +18,6 @@ if (process.env.NODE_ENV !== 'test') {
   app.use(morgan('combined')); // 'combined' outputs the apache style logs
 }
 
-// This middleware called for all routes
-// Middlaware takes three parameters
 app.use((req, res, next) => {
   console.info(`Method: ${req.method}`);
   console.info(`Path: ${req.path}`);
@@ -31,9 +29,6 @@ app.use(express.urlencoded({ extended: true }))
 
 app.use('/', editor);
 
-// Add routes for 404 and error handling
-// Catch 404 and forward to error handler
-// Put this last
 app.use((req, res, next) => {
   var err = new Error('Not Found');
   err.status = 404;

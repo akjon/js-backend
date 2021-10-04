@@ -10,7 +10,7 @@
     "watch": "nodemon server.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Johnny Karlsson",
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
