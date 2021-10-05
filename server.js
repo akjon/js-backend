@@ -7,7 +7,7 @@ const morgan = require('morgan');
 const database = require('./db/database');
 
 const app = express();
-const port = 1337;
+const port = process.env.PORT || 1337;
 
 app.use(cors());
 app.listen(port, () => console.log(`Editor API listening on port ${port}`));
