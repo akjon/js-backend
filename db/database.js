@@ -1,8 +1,12 @@
+/**
+ * Create the database connection
+ */
+
 const mongoose = require("mongoose")
 const config = require("../config.json")
 
 // let mongoDB = `mongodb://localhost:27017/test2`
-let mongoDB = `mongodb+srv://${config.username}:${config.password}@cluster0.g5oex.mongodb.net/editor?retryWrites=true&w=majority`
+let mongoDB = `mongodb+srv://${config.username}:${config.password}@${config.cluster}`
 
 mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true });
 

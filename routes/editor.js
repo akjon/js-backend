@@ -4,12 +4,10 @@
 'use strict';
 const express = require('express');
 const router = express.Router();
-// const mongoose = require("mongoose");
 const Document = require('../models/Documents');
 
 // Create
 router.post('/editor', (req, res) => {
-  console.log(req.body)
   const doc = new Document({
     _id: req.body._id,
     name: req.body.name,

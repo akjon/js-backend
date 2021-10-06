@@ -1,3 +1,7 @@
+/**
+ * Server for CRUD API
+ */
+
 'use strict';
 
 const editor = require('./routes/editor.js');
