@@ -12,6 +12,6 @@ mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true });
 
 const db = mongoose.connection;
 
-db.once("open", function () {
-    console.log("MongoDB database connection established successfully");
+db.once("open", function() {
+  console.log("MongoDB database connection established successfully");
 });
