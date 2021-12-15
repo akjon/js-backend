@@ -4,7 +4,7 @@
 "use strict";
 const express = require("express");
 const router = express.Router();
-const Document = require("../models/Documents");
+const Document = require("../models/Document");
 
 // Create
 router.post("/editor", (req, res) => {
