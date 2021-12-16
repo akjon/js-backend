@@ -1,72 +1,134 @@
 "use strict";
 
-const config = require("../config.json");
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
-const Document = require("../models/Document")
-const chai = require('chai');
-const expect = chai.expect;
-const Doc = Document
+process.env.NODE_ENV = 'test';
+let config = require("../config.json");
+let mongoose = require('mongoose');
+let Schema = mongoose.Schema;
+let Document = require("../models/Document")
+let chai = require('chai');
+let chaiHttp = require('chai-http');
+let server = require('../server');
+let should = chai.should();
 
-describe('Database Tests', function() {
-  before(function(done) {
-    mongoose.connect(`mongodb+srv://${config.username}:${config.password}@${config.cluster}`);
-    const db = mongoose.connection;
-    db.on('error', console.error.bind(console, 'connection error'));
-    db.once('open', function() {
-      console.log('Connected to test database!');
+chai.use(chaiHttp);
+
+before(function(done) {
+  mongoose.connect(`mongodb+srv://${config.username}:${config.password}@${config.cluster}`);
+  const db = mongoose.connection;
+  db.on('error', console.error.bind(console, 'connection error'));
+  db.once('open', function() {
+    console.log('Connected to test database!');
+    done();
+  });
+});
+
+describe('Testing editor API', () => {
+  beforeEach((done) => {
+    Document.deleteMany({}, (err) => {
       done();
     });
   });
-
-  describe('Test Database', function() {
-    it('New doc saved to database', function(done) {
-      let testDoc = Doc({
-        _id: 'test_id',
-        name: 'test_name',
-        data: 'test_data'
-      });
-
-      testDoc.save(done);
+  describe('Testing /GET route', () => {
+    it('it should GET all documents', (done) => {
+      chai.request(server)
+        .get('/editor')
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.body.should.be.a('array');
+          res.body.length.should.be.eql(0);
+          done();
+        });
     });
 
-    it('Dont save incorrect format', function(done) {
-      let wrongSave = Doc({
-        notDoc: 'Not document'
-      });
-      wrongSave.save(err => {
-        if (err) { return done(); }
-        throw new Error('Should generate error!');
-      });
-    });
-
-    it('Should retrieve doc by name', function(done) {
-      Doc.findOne({ name: 'test_name' }, (err, name) => {
-        if (err) { throw err; }
-        if (name.length === 0) { throw new Error('No data!'); }
-        done();
-      });
-    });
-
-    it('Should retrieve doc by id', function(done) {
-      Doc.find({ _id: 'test_id' }, (err, name) => {
-        if (err) { throw err; }
-        if (name.length === 0) { throw new Error('No data!'); }
-        done();
+    it('it should GET a document by id', (done) => {
+      let doc = new Document({ _id: "test_get_by_id", name: "test_get_by_id", data: "test_data" });
+      doc.save((err, doc) => {
+        chai.request(server)
+          .get('/editor/' + doc._id)
+          .send(doc)
+          .end((err, res) => {
+            res.should.have.status(200);
+            res.body.should.be.a('object');
+            res.body.should.have.property('name');
+            res.body.should.have.property('data');
+            res.body.should.have.property('_id').eql(doc._id);
+            done();
+          });
       });
     });
+  });
 
-    it('Delete test document', function(done) {
-      Doc.deleteOne({ name: 'test_name' }, (err, name) => {
-        if (err) { throw err; }
-        if (name.length === 0) { throw new Error('No data!'); }
-        done();
+  describe('Testing /POST route', () => {
+    it('it should POST a document ', (done) => {
+      chai.request(server)
+        .post('/editor')
+        .send({
+          _id: "test_id",
+          name: "test_name"
+        })
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.body.should.have.property('message').eql('Document successfully added');
+          done()
+        });
+    });
+    it('it should not POST a document with no name', (done) => {
+      let doc = {
+        _id: "test_id"
+      }
+      chai.request(server)
+        .post('/editor')
+        .send(doc)
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.body.should.be.a('object');
+          res.body.should.have.property('errors');
+          res.body.errors.should.have.property('name');
+          res.body.errors.name.should.have.property('kind').eql('required');
+          done();
+        });
+    });
+  });
+
+  describe('Testing /PUT/:id route', () => {
+    it('it should UPDATE a document by id', (done) => {
+      let doc = new Document({ _id: "test_update_by_id", name: "test_update_by_id", data: "test_data" })
+      doc.save((err, doc) => {
+        chai.request(server)
+          .put('/editor/' + doc._id)
+          .send({ _id: "test_update_by_id", name: "test_update_by_id", data: "test_data_updated" })
+          .end((err, res) => {
+            res.should.have.status(200);
+            res.body.should.be.a('object');
+            res.body.should.have.property('message').eql('Document updated');
+            res.body.doc.should.have.property('name');
+            res.body.doc.should.have.property('data');
+            res.body.doc.should.have.property('data').eql("test_data_updated")
+            done();
+          });
+      });
+    });
+  });
+
+  describe('Testing /DELETE/:id route', () => {
+    it('it should DELETE a document by id', (done) => {
+      let doc = new Document({ _id: "test_update_by_id", name: "test_update_by_id", data: "test_data" })
+      doc.save((err, book) => {
+        chai.request(server)
+          .delete('/editor/' + doc._id)
+          .end((err, res) => {
+            res.should.have.status(200);
+            res.body.should.be.a('object');
+            res.body.should.have.property('message').eql('Document successfully deleted');
+            res.body.result.should.have.property('deletedCount').eql(1);
+            done();
+          });
       });
     });
   });
 
   after(function(done) {
-    Doc.deleteOne({ name: 'test_name' }, (err, name) => {
+    Document.deleteOne({ name: 'test_get_by_id' }, (err, name) => {
       if (err) { throw err; }
       if (name.length === 0) { throw new Error('No data!'); }
       done();
