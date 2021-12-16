@@ -1,47 +1,56 @@
 /**
  * Routes for editor CRUD API
  */
-"use strict";
-const express = require("express");
-const router = express.Router();
-const Document = require("../models/Document");
 
-// Create
-router.post("/editor", (req, res) => {
-  const doc = new Document({
-    _id: req.body._id,
-    name: req.body.name,
-    data: req.body.data
+let mongoose = require('mongoose');
+let Doc = require('../models/Document');
+
+// GET route
+function getDocs(req, res) {
+  let query = Doc.find({});
+  query.exec((err, books) => {
+    if (err) res.send(err);
+    res.json(books);
   });
-  doc.save().then((data) => {
-    res.status(201).json({
-      message: "Handling POST requests to /editor",
-      createdDocument: data
+}
+
+// POST route
+function postDoc(req, res) {
+  var newDoc = new Doc(req.body);
+  newDoc.save((err, doc) => {
+    if (err) {
+      res.send(err);
+    }
+    else {
+      res.json({ message: "Document successfully added", doc });
+    }
+  });
+}
+
+// GET document by _id
+function getDoc(req, res) {
+  Doc.findById(req.params.id, (err, doc) => {
+    if (err) res.send(err);
+    res.json(doc);
+  });
+}
+
+// DELETE document by _id
+function deleteDoc(req, res) {
+  Doc.deleteOne({ _id: req.params.id }, (err, result) => {
+    res.json({ message: "Document successfully deleted", result });
+  });
+}
+
+// PUT document by _id
+function updateDoc(req, res) {
+  Doc.findById({ _id: req.params.id }, (err, doc) => {
+    if (err) res.send(err);
+    Object.assign(doc, req.body).save((err, doc) => {
+      if (err) res.send(err);
+      res.json({ message: 'Document updated', doc });
     });
   });
-});
+}
 
-// Read all
-router.get("/editor", (req, res, next) => {
-  Document.find()
-    .exec()
-    .then((data) => {
-      res.status(200).json(data);
-    });
-});
-
-// Update one
-router.put("/editor/:documentId", (req, res, next) => {
-  const id = { _id: req.params.documentId };
-  console.log(id);
-  Document.updateOne(id, req.body)
-    .exec()
-    .then((data) => {
-      console.log(data);
-      res.status(200).json(data);
-    });
-});
-
-// Delete
-
-module.exports = router;
+module.exports = { getDocs, postDoc, getDoc, deleteDoc, updateDoc };
