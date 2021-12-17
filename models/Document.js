@@ -7,8 +7,9 @@ const Document = new Schema({
   creationDate: { type: Date, default: Date.now }
 });
 
-Document.pre('save', next => {
-  now = new Date();
+Document.pre("save", (next) => {
+  let now = new Date();
+
   if (!this.createdAt) {
     this.createdAt = now;
   }

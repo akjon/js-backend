@@ -10,16 +10,9 @@ let mongoose = require('mongoose');
 let morgan = require('morgan');
 let bodyParser = require('body-parser');
 let config = require('./config.json');
+let database = require("./db/database");
 const port = process.env.PORT || 1337;
 
-let options = {
-  server: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } },
-  replset: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } }
-};
-
-mongoose.connect(`mongodb+srv://${config.username}:${config.password}@${config.cluster}`);
-let db = mongoose.connection;
-db.on('error', console.error.bind(console, 'connection error:'));
 
 if (process.env.NODE_ENV !== "test") {
   app.use(morgan("combined"));
@@ -31,7 +24,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.text());
 app.use(bodyParser.json({ type: 'application/json' }));
 
-app.get("/", cors(), (req, res) => res.json({ message: "This is an editor API for a react-app using quilljs." }));
+app.get("/", cors(), (req, res) => res.json({
+  message: "This is an editor API for a react-app using quilljs."
+}));
 
 app.route("/editor")
   .get(editor.getDocs)
@@ -44,4 +39,25 @@ app.route("/editor/:id")
 app.listen(port);
 console.log(`Editor API listening on port ${port}`);
 
+app.use((req, res, next) => {
+  let err = new Error("Not Found");
+
+  err.status = 404;
+  next(err);
+});
+
+// app.use((err, req, res, next) => {
+//   if (res.headersSent) {
+//     return next(err);
+//   }
+
+//   res.status(err.status || 500).json({
+//     errors: [
+//       {
+//         status: err.status,
+//         message: err.message
+//       }
+//     ]
+//   });
+// });
 module.exports = app;
