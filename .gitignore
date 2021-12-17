@@ -1,3 +1,5 @@
 node_modules/
 config.json
 test_example
+.nyc_output/
+coverage/

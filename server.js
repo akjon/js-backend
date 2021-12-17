@@ -46,18 +46,18 @@ app.use((req, res, next) => {
   next(err);
 });
 
-// app.use((err, req, res, next) => {
-//   if (res.headersSent) {
-//     return next(err);
-//   }
+app.use((err, req, res, next) => {
+  if (res.headersSent) {
+    return next(err);
+  }
 
-//   res.status(err.status || 500).json({
-//     errors: [
-//       {
-//         status: err.status,
-//         message: err.message
-//       }
-//     ]
-//   });
-// });
+  res.status(err.status || 500).json({
+    errors: [
+      {
+        status: err.status,
+        message: err.message
+      }
+    ]
+  });
+});
 module.exports = app;

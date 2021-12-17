@@ -8,7 +8,9 @@
     "test": "nyc --reporter=html --reporter=text mocha 'test/**/*.js' --timeout 10000 --exit",
     "dev": "NODE_ENV='production' nodemon server.js",
     "eslint": "eslint .",
-    "eslint-fix": "eslint . --fix"
+    "eslint-fix": "eslint . --fix",
+    "report-coveralls": "nyc report --reporter=text-lcov | coveralls",
+    "report-codecov": "nyc report --reporter=lcov > coverage.lcov && codecov"
   },
   "keywords": [],
   "author": "Johnny Karlsson",
@@ -23,6 +25,8 @@
   "devDependencies": {
     "chai": "^4.3.4",
     "chai-http": "^4.3.0",
+    "codecov": "^3.8.3",
+    "coveralls": "^3.1.1",
     "eslint": "^8.4.1",
     "eslint-plugin-react": "^7.27.1",
     "javascript-style-guide": "^1.0.1",
