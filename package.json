@@ -5,12 +5,15 @@
   "main": "index.js",
   "scripts": {
     "start": "node server.js",
-    "test": "nyc --reporter=html --reporter=text mocha 'test/**/*.js' --timeout 10000 --exit",
-    "dev": "NODE_ENV='production' nodemon server.js",
+    "test": "NODE_ENV='test' nyc --reporter=html --reporter=text mocha 'test/**/*.js' --timeout 10000 --exit",
+    "test-dev": "NODE_ENV='dev' nyc --reporter=html --reporter=text mocha 'test/**/*.js' --timeout 10000 --exit",
+    "dev": "NODE_ENV='dev' nodemon server.js",
     "eslint": "eslint .",
     "eslint-fix": "eslint . --fix",
     "report-coveralls": "nyc report --reporter=text-lcov | coveralls",
-    "report-codecov": "nyc report --reporter=lcov > coverage.lcov && codecov"
+    "report-codecov": "nyc report --reporter=lcov > coverage.lcov && codecov",
+    "clean": "rm -rf node_modules/ package-lock.json",
+    "clean-tests": "npm run clean && npm install && npm test"
   },
   "keywords": [],
   "author": "Johnny Karlsson",

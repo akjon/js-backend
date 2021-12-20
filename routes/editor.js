@@ -1,8 +1,8 @@
 /**
- * Routes for editor CRUD API
+ * Route functions for editor CRUD API
  */
 
-let Doc = require("../models/Document");
+const Doc = require("../models/Document");
 
 // GET route
 function getDocs(req, res) {
@@ -13,7 +13,7 @@ function getDocs(req, res) {
       return res
         .send(err)
         .message("Not found")
-      ;
+        ;
     }
     return res.json(doc);
   });

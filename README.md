@@ -1,3 +1,4 @@
+[![Build Status](https://app.travis-ci.com/akjon/js-backend.svg?branch=main)](https://app.travis-ci.com/akjon/js-backend)
 # Editor backend
 
 ## Description
@@ -24,6 +25,7 @@ Use this format:
   "username": <MongoDB user>,
   "password": <MongoDB password>,
   "cluster": <MongoDB cluster address>
+  "clusterTest": <MongoDB test cluster address>
 }
 ```
 
@@ -41,6 +43,10 @@ npm run start
 
 Returns all avaliable documents in the collection.
 
+### GET /editor:documentId
+
+Return document with 'documentId'.
+
 ### POST /editor
 
 Creates a new document in the collection with the request body's details. The id is generated in the client.
@@ -48,3 +54,7 @@ Creates a new document in the collection with the request body's details. The id
 ### PUT /editor/:documentId
 
 Updates an existing document with the 'documentId' with the request body's details.
+
+### DELETE /editor/:documentId
+
+Deletes an existing document with 'documentId'.

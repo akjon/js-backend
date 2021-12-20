@@ -1,13 +1,11 @@
 "use strict";
 
-process.env.NODE_ENV = "test";
-let config = require("../config.json");
-let mongoose = require("mongoose");
-let Document = require("../models/Document");
-let chai = require("chai");
-let chaiHttp = require("chai-http");
-let server = require("../server");
-let should = chai.should();
+const mongoose = require("mongoose");
+const Document = require("../models/Document");
+const chai = require("chai");
+const chaiHttp = require("chai-http");
+const server = require("../server");
+const should = chai.should();
 
 chai.use(chaiHttp);
 

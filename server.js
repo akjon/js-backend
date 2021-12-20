@@ -9,14 +9,16 @@ let app = express();
 let mongoose = require('mongoose');
 let morgan = require('morgan');
 let bodyParser = require('body-parser');
-let config = require('./config.json');
 let database = require("./db/database");
 const port = process.env.PORT || 1337;
 
 
-if (process.env.NODE_ENV !== "test") {
+if (process.env.NODE_ENV === "test") {
+  console.info(`Starting express with env var: ${process.env.NODE_ENV}`)
+} else {
   app.use(morgan("combined"));
 }
+
 
 app.use(cors());
 app.use(bodyParser.json());
